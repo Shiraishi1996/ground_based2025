@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web-based Geo-Spatial Data Visualizer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="left-panel">
+            
+            <div class="control-section">
+                <h3>画像解析 (RI計算)</h3>
+                <div class="form-grid">
+                    <label for="numeratorFormula">分子式:</label>
+                    <input type="text" id="numeratorFormula" value="R-G">
+                    <label for="denominatorFormula">分母式:</label>
+                    <input type="text" id="denominatorFormula" value="R+G">
+                    <label for="nClusters">クラスタ数:</label>
+                    <input type="number" id="nClusters" value="7">
+                    <label for="targetRI">目標RI値:</label>
+                    <input type="number" id="targetRI" value="0.08" step="0.01">
+                </div>
+                <div class="button-grid-single">
+                    <button id="imageAnalysisBtn">画像を選択して解析</button>
+                    <input type="file" id="imageAnalysisInput" accept="image/jpeg,image/png" style="display:none;" multiple>
+                </div>
+                <div id="analysisProgress" class="progress-text"></div>
+            </div>
+
+            <div class="control-section">
+                <h3>データテーブル</h3>
+                <input type="text" id="searchInput" placeholder="カテゴリでフィルタ..." class="full-width-input">
+                <div class="table-container">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAllCheckbox"></th>
+                                <th>No</th>
+                                <th>カテゴリ</th>
+                                <th>緯度</th>
+                                <th>経度</th>
+                                <th>方位角</th>
+                                <th>RI右</th>
+                                <th>RI左</th>
+                                <th>FOV左緯度</th>
+                                <th>FOV左経度</th>
+                                <th>FOV右緯度</th>
+                                <th>FOV右経度</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h4>テーブルデータ入力 (手動)</h4>
+                <div class="form-grid">
+                    <label for="categoryInput">カテゴリ:</label>
+                    <input type="text" id="categoryInput">
+                    <label for="latInput">緯度:</label>
+                    <input type="number" id="latInput" step="any">
+                    <label for="lonInput">経度:</label>
+                    <input type="number" id="lonInput" step="any">
+                    <label for="azimuthInput">方位角(度):</label>
+                    <input type="number" id="azimuthInput" step="any">
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h4>テーブル操作</h4>
+                <div class="button-grid-3">
+                    <button id="addRowBtn">行追加</button>
+                    <button id="deleteRowBtn">選択行削除</button>
+                    <button id="sortTimeBtn">時間でソートし方位角を再計算</button>
+                    <button id="importCsvBtn">CSVインポート</button>
+                    <input type="file" id="csvFileInput" accept=".csv" style="display:none;">
+                    <button id="exportCsvBtn">CSVエクスポート</button>
+                    <button id="plotSelectedBtn">選択行を地図表示</button>
+                    <button id="plotAllBtn">全行を地図表示</button>
+                    <button id="clearTableMarkersBtn">テーブルマーカークリア</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h4>FOVパラメータ</h4>
+                 <div class="form-grid">
+                    <label for="fovAngleInput">視野角(度):</label>
+                    <input type="number" id="fovAngleInput" value="140">
+                    <label for="roadWidthInput">道路幅(m):</label>
+                    <input type="number" id="roadWidthInput" value="15">
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>ポリゴン操作と統計</h3>
+                <div class="table-container">
+                    <table id="polygonTable">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAllPolygonsCheckbox"></th>
+                                <th>ID</th>
+                                <th>ソース</th>
+                                <th>頂点数</th>
+                                <th>平均RI</th>
+                                <th>内部点数</th>
+                            </tr>
+                        </thead>
+                        <tbody id="polygonTableBody"></tbody>
+                    </table>
+                </div>
+                 <div class="button-grid">
+                    <button id="importPolygonBtn">ファイルからインポート</button>
+                    <input type="file" id="polygonFileInput" accept=".json,.geojson,.txt" style="display:none;" multiple>
+                    <button id="calcStatsBtn">ポリゴン統計計算</button>
+                    <button id="deleteSelectedPolygonsBtn">選択ポリゴン削除</button>
+                    <button id="exportPolygonCsvBtn">ポリゴンCSVエクスポート</button>
+                 </div>
+                 <div class="osm-extract-section">
+                    <select id="osmBuildingType">
+                        <option value="house">居住家屋 (house)</option>
+                        <option value="apartments">集合住宅 (apartments)</option>
+                        <option value="commercial">商業施設 (commercial)</option>
+                        <option value="industrial">工業施設 (industrial)</option>
+                        <option value="school">学校 (school)</option>
+                        <option value="yes">建物全般 (yes)</option>
+                    </select>
+                    <button id="osmImportBtn">OSMから建物をインポート</button>
+                 </div>
+                 <button id="clearPolygonMapBtn" style="width: 100%; margin-top: 5px;">ポリゴン地図クリア</button>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div id="map"></div>
+        </div>
+    </div>
+    
+    <div id="csvMappingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>CSVカラムマッピング</h2>
+            <p>CSVのヘッダーをテーブルの列に割り当ててください。(緯度・経度は必須)</p>
+            <div id="mappingUI"></div>
+            <button id="confirmMappingBtn">確定</button>
+        </div>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <div class="modal-content image-modal-content">
+            <span class="close-button image-close-button">&times;</span>
+            <img id="modalImage" src="" alt="解析画像">
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.3.2/papaparse.min.js"></script>
+    <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <script src="https://unpkg.com/osmtogeojson@3.0.0-beta.4/osmtogeojson.js"></script>
+    
+    <script src="script.js"></script>
+
+</body>
+</html>
