@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン - 災害情報マップ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <h1>災害情報マップ</h1>
+        <p>Emailとパスワードでログインまたは新規登録してください。</p>
+        <div class="form-group">
+            <input type="email" id="email" placeholder="メールアドレス" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" placeholder="パスワード" required>
+        </div>
+        <button id="loginBtn">ログイン</button>
+        <button id="signUpBtn">新規登録</button>
+        <p id="error-message" class="error"></p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    
+    <script src="auth.js"></script>
+</body>
+</html>
