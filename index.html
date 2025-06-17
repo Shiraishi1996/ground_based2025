@@ -1,1 +1,88 @@
-kok
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>災害情報マップ</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://pchen66.github.io/js/three/three.min.js"></script>
+    <script src="https://pchen66.github.io/js/panolens/panolens.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/exifr/dist/lite.umd.js"></script>
+</head>
+<body>
+    <div class="header">
+        <span id="user-email"></span>
+        <div>
+            <button id="open-post-modal-btn">投稿する</button>
+            <button id="logoutBtn">ログアウト</button>
+        </div>
+    </div>
+    
+    <div id="map"></div>
+
+    <div class="timeline-container">
+        <input type="range" id="time-slider" min="0" max="100" value="100" disabled>
+        <span id="slider-time-label">最新</span>
+    </div>
+
+    <div id="post-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>写真を投稿</h2>
+            <p>GPS情報が含まれる写真を選択してください。</p>
+            <input type="file" id="photo-file" accept="image/*" required>
+            
+            <div id="exif-info" class="exif-info-box">
+                <p><strong>撮影日時:</strong> <span id="taken-at"></span></p>
+                <p><strong>緯度:</strong> <span id="latitude"></span></p>
+                <p><strong>経度:</strong> <span id="longitude"></span></p>
+            </div>
+            
+            <div class="form-group">
+                <label for="category-select">災害カテゴリ:</label>
+                <select id="category-select">
+                    <option value="road_damage">道路被害</option>
+                    <option value="building_damage">建物被害</option>
+                    <option value="lifeline">ライフライン</option>
+                    <option value="fire">火災</option>
+                    <option value="shelter">避難所情報</option>
+                    <option value="other">その他</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <input type="checkbox" id="is360-checkbox">
+                <label for="is360-checkbox">これは360度写真です</label>
+            </div>
+            
+            <textarea id="photo-description" placeholder="詳しい状況を入力..."></textarea>
+            <button id="submit-post">投稿する</button>
+            <p id="upload-progress"></p>
+        </div>
+    </div>
+    
+    <div id="detail-modal" class="modal">
+         <div class="modal-content detail-modal-content">
+            <span class="close-button">&times;</span>
+            <div id="viewer-container"></div>
+            <div class="detail-info">
+                 <p><strong>撮影日時:</strong> <span id="detail-taken-at"></span></p>
+                 <p><strong>カテゴリ:</strong> <span id="detail-category"></span></p>
+                 <p><strong>投稿者:</strong> <span id="detail-user"></span></p>
+                 <p id="detail-description"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+    <script src="app.js"></script>
+    
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZKe-odvIugWac2kJJHbJBSg1gdY1lpwY&callback=initMap"></script>
+</body>
+</html>
